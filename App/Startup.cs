@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using FitKidCateringApp.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace FitKidCateringApp
 {
@@ -25,7 +20,15 @@ namespace FitKidCateringApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            var db = Configuration["Database:User:Password"];
+
+            services.AddDbContext<ApplicationDbContext>(opts =>
+                opts.UseSqlServer($@"Server={Configuration["Database:Server"]};Database={Configuration["Database:Database"]};User Id={Configuration["Database:User:Id"]};Password={Configuration["Database:User:Password"]};MultipleActiveResultSets=true;")
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -28,3 +28,17 @@ Backend:
 		- Podajemy nazwę hosta jako "http://fitkidcatering.com/"
 		- Upewniamy się, że podany port to "80", oraz wybrany tryb to "http"
 	- Upewniamy się, że nowo utworzona witryna jest uruchomiona
+	
+4. Przygotowanie bazy danych:
+	- Instalujemy SQL Server 2017
+	- W SQL Server Menagment Studio:
+		- W zakładce "Databases" dodajemy nową bazę danych
+			- Podajemy nazwę (np. "FitKidCatering")
+		- W zakładce "Security"->"Logins" dodajemy nowy login
+			- Podajemy nazwę (np. "FitKid")
+			- Zmieniamy sposób autentykacji na "SQL Server authentication"
+			- Podajemy hasło (np. "FitKid")
+			- Odznaczamy opcje wymuszenia zmiany hasła, jego wygaśnięcia oraz wymuszenia zasad dla hasła
+			- Przechodzimy do zakładki "User Mapping"
+			- Zaznaczamy "Map" dla wcześniej utworzonej bazy danych
+			- W dolnym panelu zaznaczamy "db_owner"
