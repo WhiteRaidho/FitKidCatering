@@ -7,7 +7,7 @@ namespace FitKidCateringApp.Models
         #region OnModelCreating()
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
+            base.OnModelCreating(modelBuilder);
         }
         #endregion
 
