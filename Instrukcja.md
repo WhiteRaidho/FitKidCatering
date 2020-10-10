@@ -6,6 +6,7 @@ Backend:
 1. Instalacja niezbędnych SDK:
 	- (dev) ASP.NET SDK 2.2.110: https://dotnet.microsoft.com/download/dotnet-core/thank-you/sdk-2.2.110-windows-x86-installer
 	- ASP.NET Core Hosting Bundle 2.2.8: https://dotnet.microsoft.com/download/dotnet-core/thank-you/runtime-aspnetcore-2.2.8-windows-hosting-bundle-installer
+	- URL Rewrite https://www.iis.net/downloads/microsoft/url-rewrite
 	
 2. Przygotowanie plików systemowych:
 	- Przy pomocy narzędzia do edycji tekstu uruchomionego w trybie administratora uruchamiamy plik "hosts" znajdujący się w katalogu "%SystemRoot%\system32\drivers\etc"
@@ -25,12 +26,15 @@ Backend:
 		- Podajemy nazwę witryny jako "fitkidcatering.com"
 		- Wybieramy pulę aplikacji jako utworzoną we wcześniejszym kroku
 		- Wybieramy ścieżkę fizyczną jako główny katalog naszego projektu
-		- Podajemy nazwę hosta jako "http://fitkidcatering.com/"
+		- Podajemy nazwę hosta jako "fitkidcatering.com"
 		- Upewniamy się, że podany port to "80", oraz wybrany tryb to "http"
 	- Upewniamy się, że nowo utworzona witryna jest uruchomiona
 	
 4. Przygotowanie bazy danych:
 	- Instalujemy SQL Server 2017
+	- Ustawiamy możliwość logowania do serwera bazodanowego (PPM na nazwę serwera bazodanowego -> "Properties" -> "Security")
+		- zmieniamy sposób logowania na "SQL Server authentication and Windows Authentication"
+		
 	- W SQL Server Menagment Studio:
 		- W zakładce "Databases" dodajemy nową bazę danych
 			- Podajemy nazwę (np. "FitKidCatering")
@@ -49,11 +53,11 @@ Backend:
 	- Uzupełniamy ją danymi w następujący sposób:
 	```
 	"Database": {
-    "Server": "[serwer bazy danych]",
-    "Database": "[nazwa utworzonej bazy danych]",
-    "User": {
-		"Id": "[login utworzonego użytkownika]",
-		"Password": "[hasło utworzonego użytkownika]"
-	  }
+		"Server": "[serwer bazy danych]",
+		"Database": "[nazwa utworzonej bazy danych]",
+		"User": {
+			"Id": "[login utworzonego użytkownika]",
+			"Password": "[hasło utworzonego użytkownika]"
+		}
 	}
 	```
