@@ -42,3 +42,18 @@ Backend:
 			- Przechodzimy do zakładki "User Mapping"
 			- Zaznaczamy "Map" dla wcześniej utworzonej bazy danych
 			- W dolnym panelu zaznaczamy "db_owner"
+
+5. Przygotowanie aplikacji:
+	- Przy pomocy narzędzia do edycji tekstu uruchamiamy plik "appsetings.json"
+	- Upewniamy się, że istnieje tam sekcja "Database"
+	- Uzupełniamy ją danymi w następujący sposób:
+	```
+	"Database": {
+    "Server": "[serwer bazy danych]",
+    "Database": "[nazwa utworzonej bazy danych]",
+    "User": {
+		"Id": "[login utworzonego użytkownika]",
+		"Password": "[hasło utworzonego użytkownika]"
+	  }
+	}
+	```
