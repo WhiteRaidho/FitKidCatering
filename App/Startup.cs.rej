@@ -1,0 +1,6 @@
+diff a/App/Startup.cs b/App/Startup.cs	(rejected hunks)
+@@ -2,3 +3,4 @@
+++<<<<<<< Updated upstream
+ +﻿using FitKidCateringApp.Models;
+ +=======
+  ﻿using AutoMapper;

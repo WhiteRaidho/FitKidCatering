@@ -1,0 +1,6 @@
+diff a/App/Models/ApplicationDbContext.cs b/App/Models/ApplicationDbContext.cs	(rejected hunks)
+@@ -2,3 +3,4 @@
+++<<<<<<< Updated upstream
+ +﻿using Microsoft.EntityFrameworkCore;
+ +=======
+  ﻿using FitKidCateringApp.Models.Core;

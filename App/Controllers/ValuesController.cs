@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FitKidCateringApp.Attributes;
+using FitKidCateringApp.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitKidCateringApp.Controllers
@@ -12,6 +14,7 @@ namespace FitKidCateringApp.Controllers
     {
         // GET api/values
         [HttpGet]
+        [Authorized(Role.Admin, Role.User)]
         public ActionResult<IEnumerable<string>> Get()
         {
             return new string[] { "value1", "value2" };

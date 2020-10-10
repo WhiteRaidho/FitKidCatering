@@ -1,8 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+﻿using FitKidCateringApp.Models.Core;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace FitKidCateringApp.Models
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<CoreUser, CoreRole, long>
     {
         #region OnModelCreating()
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -17,5 +20,8 @@ namespace FitKidCateringApp.Models
 
         }
         #endregion
+
+        public DbSet<CoreUser> CoreUsers { get; set; }
+        public DbSet<CoreRole> CoreRoles { get; set; }
     }
 }

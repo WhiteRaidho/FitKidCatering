@@ -1,0 +1,9 @@
+diff a/App/App.csproj b/App/App.csproj	(rejected hunks)
+@@ -15,6 +15,7 @@
+    </ItemGroup>
+  
+    <ItemGroup>
+++<<<<<<< Updated upstream
+ +    <Folder Include="Extensions\" />
+ +    <Folder Include="Services\" />
+ +    <Folder Include="ViewModels\" />
