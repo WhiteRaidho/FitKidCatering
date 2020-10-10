@@ -1,5 +1,5 @@
-﻿using FitKidCateringApp.Models;
-﻿using AutoMapper;
+using FitKidCateringApp.Models;
+using AutoMapper;
 using FitKidCateringApp.Extensions;
 using FitKidCateringApp.Models;
 using FitKidCateringApp.Models.Core;
@@ -33,6 +33,10 @@ namespace FitKidCateringApp
         {
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            #region AutoMapper
+            services.AddAutoMapper(typeof(Startup));
+            #endregion
 
             #region Database
             services.AddDbContext<ApplicationDbContext>(opts =>
@@ -72,6 +76,10 @@ namespace FitKidCateringApp
                 });
             #endregion
 
+            #region Services
+            services.RegisterDataServices();
+            #endregion
+
             #region Swagger
             services.AddSwaggerGen(c =>
             {
@@ -106,8 +114,10 @@ namespace FitKidCateringApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider, ApplicationDbContext applicationDbContext)
         {
+            applicationDbContext.Database.Migrate();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -122,6 +132,14 @@ namespace FitKidCateringApp
 
             //app.UseHttpsRedirection();
             app.UseMvc();
+
+            #region Swagger
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Library CMS API");
+            });
+            #endregion
         }
     }
 }

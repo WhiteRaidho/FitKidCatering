@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 ﻿using FitKidCateringApp.Models.Core;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 
 namespace FitKidCateringApp.Models
 {
@@ -10,7 +9,7 @@ namespace FitKidCateringApp.Models
         #region OnModelCreating()
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
+            base.OnModelCreating(modelBuilder);
         }
         #endregion
 
