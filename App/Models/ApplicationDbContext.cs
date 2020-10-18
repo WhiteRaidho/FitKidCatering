@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+﻿using FitKidCateringApp.Models.Core;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace FitKidCateringApp.Models
 {
@@ -17,5 +19,9 @@ namespace FitKidCateringApp.Models
 
         }
         #endregion
+
+        public DbSet<CoreUser> CoreUsers { get; set; }
+        public DbSet<CoreRole> CoreRoles { get; set; }
+        public DbSet<CorePermission> CorePermissions { get; set; }
     }
 }

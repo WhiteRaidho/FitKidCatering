@@ -1,16 +1,26 @@
 ﻿using AutoMapper;
 using FitKidCateringApp.Extensions;
 using FitKidCateringApp.Models;
+using FitKidCateringApp.Models.Core;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using FitKidCateringApp.Services.Core;
+using FitKidCateringApp.Helpers;
+using System.Linq;
+using System.Security.Principal;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace FitKidCateringApp
 {
@@ -26,7 +36,6 @@ namespace FitKidCateringApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -42,6 +51,67 @@ namespace FitKidCateringApp
             #region Services
             services.RegisterDataServices();
             #endregion
+
+            #region Identity
+            services.AddScoped<IPasswordHasher<CoreUser>, PasswordHasher<CoreUser>>();
+            services.AddIdentity<CoreUser, CoreRole>();
+            #endregion
+
+            #region Authentication
+            var key = Encoding.ASCII.GetBytes(Configuration["TokenKey"]);
+            services.AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnTokenValidated = async context =>
+                        {
+                            var provider = context.HttpContext.RequestServices;
+                            var users = provider.GetService<CoreUserService>();
+                            var user = users.GetCoreUser(context.Principal.Id());
+
+                            if (user.IsAdmin)
+                            {
+                                context.Principal.AddPermission(StandardPermissions.AdminAccess);
+                            }
+                            else
+                            {
+                                context.Principal.AddPermission(StandardPermissions.UserAccess);
+                                users.GetGlobalPermissions(user).ForEach(p => p.Value
+                                    .Where(q => q.Value == PermissionState.Allow.ToString())
+                                    .ForEach((q, i) =>
+                                    {
+                                        context.Principal.AddPermission(p.Key, q.Key);
+                                    })
+                                );
+                            }
+                        }
+                    };
+                });
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IPrincipal>(provider => provider.GetService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
+            #endregion
+
+            #region Services
+            services.RegisterDataServices();
+            services.RegisterSecurity();
+            #endregion
+
             #region Swagger
             services.AddSwaggerGen(c =>
             {
@@ -80,6 +150,8 @@ namespace FitKidCateringApp
         {
             applicationDbContext.Database.Migrate();
 
+            app.UseAuthentication();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -90,6 +162,8 @@ namespace FitKidCateringApp
                 //app.UseHsts();
             }
 
+            //StartupExtension.CreateRoles(serviceProvider).Wait();
+
             //app.UseHttpsRedirection();
             app.UseMvc();
 
@@ -98,6 +172,7 @@ namespace FitKidCateringApp
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Library CMS API");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fit Kid Catering API");
             });
             #endregion
         }
