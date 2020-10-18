@@ -16,6 +16,12 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using FitKidCateringApp.Services.Core;
+using FitKidCateringApp.Helpers;
+using System.Linq;
+using System.Security.Principal;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace FitKidCateringApp
 {
@@ -45,14 +51,8 @@ namespace FitKidCateringApp
             #endregion
 
             #region Identity
-            services.AddDefaultIdentity<CoreUser>()
-                .AddRoles<CoreRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddScoped<IPasswordHasher<CoreUser>, PasswordHasher<CoreUser>>();
-            #endregion
-
-            #region Services
-            services.RegisterDataServices();
+            services.AddIdentity<CoreUser, CoreRole>();
             #endregion
 
             #region Authentication
@@ -73,11 +73,41 @@ namespace FitKidCateringApp
                         ValidateIssuer = false,
                         ValidateAudience = false
                     };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnTokenValidated = async context =>
+                        {
+                            var provider = context.HttpContext.RequestServices;
+                            var users = provider.GetService<CoreUserService>();
+                            var user = users.GetCoreUser(context.Principal.Id());
+
+                            if (user.IsAdmin)
+                            {
+                                context.Principal.AddPermission(StandardPermissions.AdminAccess);
+                            }
+                            else
+                            {
+                                context.Principal.AddPermission(StandardPermissions.UserAccess);
+                                users.GetGlobalPermissions(user).ForEach(p => p.Value
+                                    .Where(q => q.Value == PermissionState.Allow.ToString())
+                                    .ForEach((q, i) =>
+                                    {
+                                        context.Principal.AddPermission(p.Key, q.Key);
+                                    })
+                                );
+                            }
+                        }
+                    };
                 });
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IPrincipal>(provider => provider.GetService<IHttpContextAccessor>().HttpContext?.User ?? new ClaimsPrincipal());
             #endregion
 
             #region Services
             services.RegisterDataServices();
+            services.RegisterSecurity();
             #endregion
 
             #region Swagger
@@ -118,6 +148,8 @@ namespace FitKidCateringApp
         {
             applicationDbContext.Database.Migrate();
 
+            app.UseAuthentication();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -128,7 +160,7 @@ namespace FitKidCateringApp
                 //app.UseHsts();
             }
 
-            StartupExtension.CreateRoles(serviceProvider).Wait();
+            //StartupExtension.CreateRoles(serviceProvider).Wait();
 
             //app.UseHttpsRedirection();
             app.UseMvc();
@@ -137,7 +169,7 @@ namespace FitKidCateringApp
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Library CMS API");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fit Kid Catering API");
             });
             #endregion
         }

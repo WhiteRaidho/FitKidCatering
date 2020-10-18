@@ -1,5 +1,8 @@
-﻿using FitKidCateringApp.Helpers;
+﻿using FitKidCateringApp.Extensions.Security;
+using FitKidCateringApp.Extensions.Security.Handlers;
+using FitKidCateringApp.Helpers;
 using FitKidCateringApp.Models.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -10,10 +13,11 @@ namespace FitKidCateringApp.Extensions
 {
     public static class StartupExtension
     {
+        #region RegisterDataServices()
         public static IServiceCollection RegisterDataServices(this IServiceCollection services)
         {
             var assembly = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(p => p.GetName().Name == "App")
+                .Where(p => p.GetName().Name == "FitKidCateringApp")
                 .FirstOrDefault();
 
             if (assembly != null)
@@ -27,21 +31,64 @@ namespace FitKidCateringApp.Extensions
             }
 
             return services;
-        }
+        } 
+        #endregion
 
-        public static async Task CreateRoles(IServiceProvider serviceProvider)
+        #region RegisterSecurity()
+        public static IServiceCollection RegisterSecurity(this IServiceCollection services)
         {
-            var RoleManager = serviceProvider.GetRequiredService<RoleManager<CoreRole>>();
-            IdentityResult roleResult;
-
-            foreach (var role in Enum.GetNames(typeof(Role)))
+            services.AddAuthorization(options =>
             {
-                var roleExist = await RoleManager.RoleExistsAsync(role);
-                if (!roleExist)
+                options.AddPolicy("AdminAccessPolicy", policy => policy.RequireAssertion(context =>
                 {
-                    roleResult = await RoleManager.CreateAsync(new CoreRole(role));
-                }
+                    return context.User.HasPermission(StandardPermissions.AdminAccess);
+                }));
+            });
+            services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
+            services.AddSingleton<IAuthorizationHandler, PermissionsHandler>();
+            services.AddSingleton<IAuthorizationHandler, OperationsHandler>();
+
+            var assembly = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(p => p.GetName().Name == "FitKidCateringApp")
+                .FirstOrDefault();
+
+            if (assembly != null)
+            {
+                assembly.GetTypes()
+                    .Where(p =>
+                        p.Name.EndsWith("Policy") &&
+                        p.IsAbstract == false &&
+                        p.BaseType != null &&
+                        p.BaseType.IsAbstract &&
+                        p.BaseType.IsGenericType &&
+                        (
+                            p.BaseType.GetInterfaces().Contains(typeof(IPermissionsPolicy)) ||
+                            p.BaseType.GetInterfaces().Contains(typeof(IOperationsPolicy))
+                        )
+                    )
+                    .ToList()
+                    .ForEach(p =>
+                        services.AddScoped(p)
+                    );
             }
+
+            return services;
         }
+        #endregion
+
+        //public static async Task CreateRoles(IServiceProvider serviceProvider)
+        //{
+        //    var RoleManager = serviceProvider.GetRequiredService<RoleManager<CoreRole>>();
+        //    IdentityResult roleResult;
+
+        //    foreach (var role in Enum.GetNames(typeof(Role)))
+        //    {
+        //        var roleExist = await RoleManager.RoleExistsAsync(role);
+        //        if (!roleExist)
+        //        {
+        //            roleResult = await RoleManager.CreateAsync(new CoreRole() { RoleName = role });
+        //        }
+        //    }
+        //}
     }
 }

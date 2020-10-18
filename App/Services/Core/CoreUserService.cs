@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FitKidCateringApp.Extensions;
 using FitKidCateringApp.Models;
 using FitKidCateringApp.Models.Core;
 using Microsoft.AspNetCore.Identity;
@@ -12,14 +13,20 @@ namespace FitKidCateringApp.Services.Core
     public class CoreUserService : BaseService
     {
         IPasswordHasher<CoreUser> Hasher { get; }
+        protected PermissionsService Permissions { get; }
+        protected CoreRolesService CoreRoles { get; }
 
         public CoreUserService(
             ApplicationDbContext context,
             IMapper mapper,
-            IPasswordHasher<CoreUser> hasher
+            IPasswordHasher<CoreUser> hasher,
+            PermissionsService permissions,
+            CoreRolesService coreRoles
             ) : base(context, mapper)
         {
             Hasher = hasher;
+            Permissions = permissions;
+            CoreRoles = coreRoles;
         }
 
         public List<CoreUser> GetList()
@@ -34,6 +41,12 @@ namespace FitKidCateringApp.Services.Core
         public CoreUser GetCoreUser(long id)
         {
             var CoreUser = Context.CoreUsers.FirstOrDefault(u => u.Id == id);
+            return CoreUser;
+        }
+
+        public CoreUser GetCoreUser(Guid publicId)
+        {
+            var CoreUser = Context.CoreUsers.FirstOrDefault(u => u.PublicId == publicId);
             return CoreUser;
         }
 
@@ -58,13 +71,6 @@ namespace FitKidCateringApp.Services.Core
         }
         #endregion
 
-
-        public CoreUser Authenticate(string username, string password)
-        {
-            var CoreUser = Context.CoreUsers.SingleOrDefault(x => x.UserName == username && x.PasswordHash == password);
-            return CoreUser;
-        }
-
         public string GetRefreshToken(CoreUser CoreUser)
         {
             if (String.IsNullOrEmpty(CoreUser.RefreshToken))
@@ -84,5 +90,24 @@ namespace FitKidCateringApp.Services.Core
         {
             return Context.CoreUsers.SingleOrDefault(x => x.RefreshToken == token);
         }
+
+        #region GetGlobalPermissions()
+        public List<KeyValuePair<string, Dictionary<string, string>>> GetGlobalPermissions(CoreUser user)
+        {
+            return Permissions.GetGlobalPermissions(GetAuthors(user));
+        }
+        #endregion
+
+        #region GetAuthors()
+        private List<Entity> GetAuthors(CoreUser user)
+        {
+            var authors = new List<Entity>();
+
+            authors.AddRange(CoreRoles.GetActive(user.Roles).Cast<Entity>().ToList());
+            authors.Add(user);
+
+            return authors;
+        }
+        #endregion
     }
 }

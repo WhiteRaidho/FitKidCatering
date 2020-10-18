@@ -1,19 +1,18 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using FitKidCateringApp.Extensions;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace FitKidCateringApp.Models.Core
 {
-    public class CoreRole : IdentityRole<long>
+    [Table("CoreRoles")]
+    public class CoreRole : Entity
     {
-        public CoreRole() : base()
-        {
-        }
-
-        public CoreRole(string roleName) : base(roleName)
-        {
-        }
+        [Required]
+        public string RoleName { get; set; }
     }
 }

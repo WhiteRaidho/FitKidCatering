@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace FitKidCateringApp.Models
 {
-    public class ApplicationDbContext : IdentityDbContext<CoreUser, CoreRole, long>
+    public class ApplicationDbContext : DbContext
     {
         #region OnModelCreating()
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -22,5 +22,6 @@ namespace FitKidCateringApp.Models
 
         public DbSet<CoreUser> CoreUsers { get; set; }
         public DbSet<CoreRole> CoreRoles { get; set; }
+        public DbSet<CorePermission> CorePermissions { get; set; }
     }
 }

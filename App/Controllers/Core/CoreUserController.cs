@@ -14,86 +14,62 @@ using System.Security.Claims;
 using System.Text;
 using FitKidCateringApp.ViewModels.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Identity;
 
 namespace FitKidCateringApp.Controllers.Core
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/user")]
     public class CoreUserController : ControllerBase
     {
         protected IMapper Mapper { get; }
+        protected IPasswordHasher<CoreUser> Hasher { get; }
         protected CoreUserService Users { get; }
         protected IConfiguration Configuration { get; }
 
-        public CoreUserController(IMapper mapper, CoreUserService usersService, IConfiguration configuration)
+        public CoreUserController(IMapper mapper, IPasswordHasher<CoreUser> hasher, CoreUserService usersService, IConfiguration configuration)
         {
             Mapper = mapper;
             Users = usersService;
             Configuration = configuration;
+            Hasher = hasher;
         }
-
-        //#region GetList()
-        //[HttpGet]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status403Forbidden)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesDefaultResponseType]
-        //public async Task<ActionResult<IEnumerable<UserViewModel>>> GetList()
-        //{
-        //    if (!Roles.IsAdmin(User.Identity.Name) && !Roles.IsLibrarian(User.Identity.Name)) return Forbid();
-
-        //    var list = Users.GetList();
-        //    if (list == null) return NotFound();
-
-        //    var result = Mapper.Map<IEnumerable<UserViewModel>>(list);
-        //    return Ok(result);
-        //}
-        //#endregion
-
-        //#region GetMe()
-        //// GET: api/Users/me
-        //[HttpGet("me")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesDefaultResponseType]
-        //public async Task<ActionResult<UserViewModel>> GetMe()
-        //{
-        //    var me = Users.GetUser(User.Identity.Name);
-        //    if (me == null) return NotFound();
-
-        //    var result = Mapper.Map<UserViewModel>(me);
-
-        //    result.IsLibrarian = Roles.IsLibrarian(me.UserID);
-
-        //    return (ActionResult<UserViewModel>)result;
-        //}
-        //#endregion
 
         #region Authenticate()
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody]AuthenticateModel model)
         {
-            var user = Users.Authenticate(model.Username, model.Password);
-            if (user == null) return BadRequest(new { message = "Username or password is incorrect" });
+            var user = Users.GetCoreUserByName(model.Username);
 
-            var token = CreateToken(user);
-            return Ok(token);
+            if(user != null)
+            {
+                var result = Hasher.VerifyHashedPassword(user, user.PasswordHash, model.Password);
+                var token = CreateToken(user);
+                return Ok(token);
+            }
+
+            return BadRequest(new { message = "Login lub hasło są nieprawidłowe" });
         }
 
         private TokenViewModel CreateToken(CoreUser user)
         {
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["TokenKey"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(Configuration["TokenKey"]);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, user.PublicId.ToString())
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                    new Claim(JwtRegisteredClaimNames.Jti, "1"),
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email)
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                Expires = DateTime.UtcNow.AddMinutes(30),
+                SigningCredentials = creds
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             user.Token = tokenHandler.WriteToken(token);
@@ -160,6 +136,7 @@ namespace FitKidCateringApp.Controllers.Core
             if (user != null) return BadRequest(new { message = "Taki użytkownik już istnieje" });
 
             CoreUser u = Mapper.Map<CoreUser>(model);
+            u.PasswordHash = Hasher.HashPassword(u, model.Password);
 
             user = Users.Create(u);
 
