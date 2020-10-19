@@ -45,9 +45,10 @@ namespace FitKidCateringApp
 
             #region Database
             services.AddDbContext<ApplicationDbContext>(opts =>
-                opts.UseSqlServer($@"Server={Configuration["Database:Server"]};Database={Configuration["Database:Database"]};User Id={Configuration["Database:User:Id"]};Password={Configuration["Database:User:Password"]};MultipleActiveResultSets=true;")
+                opts.UseSqlServer(Configuration["Database:DefaultConnection"])
             );
             #endregion
+
             #region Services
             services.RegisterDataServices();
             #endregion
@@ -159,12 +160,10 @@ namespace FitKidCateringApp
             else
             {
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                //app.UseHsts();
+                app.UseHsts();
             }
 
-            //StartupExtension.CreateRoles(serviceProvider).Wait();
-
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseMvc();
 
             #region Swagger

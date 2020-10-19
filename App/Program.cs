@@ -19,7 +19,7 @@ namespace FitKidCateringApp
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseUrls("http://fitkidcatering.com/")
+                //.UseUrls("http://fitkidcatering.com/")
                 .UseIIS()
                 .UseIISIntegration()
                 .UseStartup<Startup>();
