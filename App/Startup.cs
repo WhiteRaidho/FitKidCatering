@@ -144,6 +144,18 @@ namespace FitKidCateringApp
                 });
             });
             #endregion
+
+            #region CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAny",
+                    builder => {
+                        builder.AllowAnyOrigin();
+                        builder.AllowAnyHeader();
+                        builder.AllowAnyMethod();
+                    });
+            });
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -163,6 +175,8 @@ namespace FitKidCateringApp
                 app.UseHsts();
             }
 
+            app.UseCors("AllowAny");
+
             app.UseHttpsRedirection();
             app.UseMvc();
 
@@ -170,7 +184,6 @@ namespace FitKidCateringApp
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Library CMS API");
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fit Kid Catering API");
             });
             #endregion

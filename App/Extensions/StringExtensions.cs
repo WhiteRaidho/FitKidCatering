@@ -17,7 +17,14 @@ namespace FitKidCateringApp.Extensions
         public static string SerializeJson<TKey>(this TKey value)
         {
             return value != null ? JsonConvert.SerializeObject(value, Formatting.None) : String.Empty;
-        } 
+        }
+        #endregion
+
+        #region Join()
+        public static string Join(this IEnumerable<string> list, string separator)
+        {
+            return String.Join(separator, list.ToArray());
+        }
         #endregion
     }
 }

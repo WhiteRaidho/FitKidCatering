@@ -65,7 +65,7 @@ namespace FitKidCateringApp.Controllers.Core
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                    new Claim(JwtRegisteredClaimNames.Jti, "1"),
+                    //new Claim(JwtRegisteredClaimNames.Jti, "1"),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email)
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(30),

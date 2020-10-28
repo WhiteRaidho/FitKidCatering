@@ -98,6 +98,46 @@ namespace FitKidCateringApp.Services.Core
                 })
                 .ToList();
         }
+
+        #region ChangeGlobalPermissions()
+        public List<KeyValuePair<string, Dictionary<string, string>>> ChangeGlobalPermissions(Entity author, List<KeyValuePair<string, Dictionary<string, string>>> permissions)
+        {
+            var result = Context.CorePermissions
+                .Where(p =>
+                    p.AuthorType == author.GetType().FullName &&
+                    p.AuthorId == author.Id &&
+                    p.ResourceId == null
+                )
+                .ToList();
+
+            result.ForEach(p =>
+                Context.Remove(p)
+            );
+
+            permissions.ForEach(p =>
+            {
+                var items = result.Where(q => q.PermissionsType == p.Key).ToList();
+
+                if (items.Count == 0)
+                {
+                    Context.Add(new CorePermission()
+                    {
+                        AuthorType = author.GetType().FullName,
+                        AuthorId = author.Id,
+                        PermissionsType = p.Key,
+                        Permissions = p.Value
+                    });
+                }
+                if (items.Count > 0)
+                {
+                    var item = items.First();
+                    item.Permissions = p.Value;
+                    Context.Update(item);
+                }
+            });
+            return permissions;
+        }
+        #endregion
     }
 
     public enum PermissionType

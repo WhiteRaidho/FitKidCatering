@@ -98,6 +98,14 @@ namespace FitKidCateringApp.Services.Core
         }
         #endregion
 
+        #region ChangePermissions()
+        public void ChangePermissions(CoreUser entity, List<KeyValuePair<string, Dictionary<string, string>>> permissions)
+        {
+            entity.Permissions = Permissions.ChangeGlobalPermissions(entity, permissions);
+            SaveChanges();
+        }
+        #endregion
+
         #region GetAuthors()
         private List<Entity> GetAuthors(CoreUser user)
         {

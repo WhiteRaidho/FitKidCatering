@@ -41,5 +41,8 @@ namespace FitKidCateringApp.Models.Core
             get => RolesJson.DeserializeJson<List<long>>();
             set => RolesJson = value.Select(p => p.ToString()).SerializeJson();
         }
+
+        [NotMapped]
+        public List<KeyValuePair<string, Dictionary<string, string>>> Permissions { get; set; } = new List<KeyValuePair<string, Dictionary<string, string>>>();
     }
 }
