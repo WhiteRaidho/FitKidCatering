@@ -19,6 +19,8 @@ namespace FitKidCateringApp.Models.Core
         {
             CreateMap<RegisterViewModel, CoreUser>()
                 .ForMember(d => d.PasswordHash, o => o.Ignore());
+
+            CreateMap<CoreUser, UserListItemModel>();
         } 
         #endregion
     }

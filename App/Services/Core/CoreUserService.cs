@@ -2,6 +2,8 @@
 using FitKidCateringApp.Extensions;
 using FitKidCateringApp.Models;
 using FitKidCateringApp.Models.Core;
+using FitKidCateringApp.ViewModels.Core;
+using LinqKit;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -29,12 +31,34 @@ namespace FitKidCateringApp.Services.Core
             CoreRoles = coreRoles;
         }
 
-        public List<CoreUser> GetList()
+        public List<CoreUser> GetList(int limit = 0, UserFilter filter = null)
         {
-            var list = Context.CoreUsers
-                .ToList();
+            var predicate = PredicateBuilder.New<CoreUser>(true);
 
-            return list;
+            if(!String.IsNullOrEmpty(filter.Email))
+            {
+                predicate.And(x => x.Email.ToLower().Contains(filter.Email.ToLower()));
+            }
+
+            if (!String.IsNullOrEmpty(filter.Name))
+            {
+                predicate.And(x => x.FirstName.ToLower().Contains(filter.Name.ToLower()) || x.LastName.ToLower().Contains(filter.Name.ToLower()));
+            }
+
+            if (!String.IsNullOrEmpty(filter.UserName))
+            {
+                predicate.And(x => x.UserName.ToLower().Contains(filter.UserName.ToLower()));
+            }
+
+            var list = Context.CoreUsers
+                .Where(predicate);
+
+            if(limit > 0)
+            {
+                list = list.Take(limit);
+            }
+
+            return list.ToList();
         }
 
         #region GetCoreUser()

@@ -19,13 +19,13 @@ namespace FitKidCateringApp.Controllers.Core
     [ApiController]
     [Area("Admin.Core")]
     [Route("api/admin/permissions")]
-    public class PermissionsController : Controller
+    public class AdminPermissionsController : Controller
     {
         protected CoreUserService Users { get; }
         protected PermissionsService PermissionsService { get; }
 
         #region PermissionsController()
-        public PermissionsController(CoreUserService usersService, PermissionsService permissionsService)
+        public AdminPermissionsController(CoreUserService usersService, PermissionsService permissionsService)
         {
             Users = usersService;
             PermissionsService = permissionsService;
