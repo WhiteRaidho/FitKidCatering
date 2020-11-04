@@ -42,7 +42,10 @@ namespace FitKidCateringApp.Services.Core
 
             if (!String.IsNullOrEmpty(filter.Name))
             {
-                predicate.And(x => x.FirstName.ToLower().Contains(filter.Name.ToLower()) || x.LastName.ToLower().Contains(filter.Name.ToLower()));
+                foreach(var name in filter.Name.Split(" "))
+                {
+                    predicate.And(x => (x.FirstName + " " + x.LastName).ToLower().Contains(name.ToLower()));
+                }
             }
 
             if (!String.IsNullOrEmpty(filter.UserName))

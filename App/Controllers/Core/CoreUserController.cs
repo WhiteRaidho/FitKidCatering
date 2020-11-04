@@ -15,6 +15,8 @@ using System.Text;
 using FitKidCateringApp.ViewModels.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Principal;
+using FitKidCateringApp.Extensions;
 
 namespace FitKidCateringApp.Controllers.Core
 {
@@ -27,13 +29,15 @@ namespace FitKidCateringApp.Controllers.Core
         protected IPasswordHasher<CoreUser> Hasher { get; }
         protected CoreUserService Users { get; }
         protected IConfiguration Configuration { get; }
+        //protected ClaimsPrincipal User { get; }
 
-        public CoreUserController(IMapper mapper, IPasswordHasher<CoreUser> hasher, CoreUserService usersService, IConfiguration configuration)
+        public CoreUserController(IMapper mapper, IPasswordHasher<CoreUser> hasher, CoreUserService usersService, IConfiguration configuration, IPrincipal user )
         {
             Mapper = mapper;
             Users = usersService;
             Configuration = configuration;
             Hasher = hasher;
+            //User = (ClaimsPrincipal)user;
         }
 
         #region Authenticate()
@@ -143,6 +147,22 @@ namespace FitKidCateringApp.Controllers.Core
             if (user == null) return BadRequest(new { message = "Coś poszło nie tak" });
 
             return Ok();
+        }
+        #endregion
+
+        #region GetMe()
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<UserListItemModel>> GetMe()
+        {
+            var user = Users.GetCoreUser(User.Id());
+            if (user == null) return NotFound();
+
+            var result = Mapper.Map<UserListItemModel>(user);
+            result.Id = 0;
+            return Ok(result);
         }
         #endregion
     }
