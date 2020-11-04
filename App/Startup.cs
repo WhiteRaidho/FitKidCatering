@@ -91,7 +91,6 @@ namespace FitKidCateringApp
                             }
                             else
                             {
-                                context.Principal.AddPermission(StandardPermissions.UserAccess);
                                 users.GetGlobalPermissions(user).ForEach(p => p.Value
                                     .Where(q => q.Value == PermissionState.Allow.ToString())
                                     .ForEach((q, i) =>

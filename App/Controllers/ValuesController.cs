@@ -24,7 +24,7 @@ namespace FitKidCateringApp.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        [RequireAny(StandardPermissions.UserAccess)]
+        [RequireAny(StandardPermissions.CateringEmployee)]
         public ActionResult<string> Get(int id)
         {
             return "value";
