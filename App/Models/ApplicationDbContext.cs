@@ -26,5 +26,7 @@ namespace FitKidCateringApp.Models
         public DbSet<CorePermission> CorePermissions { get; set; }
 
         public DbSet<Offer> Offers { get; set; }
+
+        public DbSet<Institution> Institutions { get; set; }
     }
 }
