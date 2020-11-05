@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 namespace FitKidCateringApp.Helpers
 {
     //HACK Tutaj dodajemy nowe uprawnienia, może pojawić się konieczność podziału na uprawnienia w zależności od modułu
-    [GlobalPermissions("[[[Uprawnienia ogólne]]]")]
+    [GlobalPermissions("Uprawnienia ogólne")]
     public enum StandardPermissions
     {
         [Description("Dostęp administratora")]
         AdminAccess,
 
-        [Description("Dostęp użytkownika")]
-        UserAccess
+        [Description("Pracownik kateringu")]
+        CateringEmployee
     }
 
     public enum PermissionState
