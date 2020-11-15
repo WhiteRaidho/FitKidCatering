@@ -2,6 +2,7 @@
 ﻿using FitKidCateringApp.Models.Core;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using FitKidCateringApp.Models.Offers;
+using FitKidCateringApp.Models.Institutions;
 
 namespace FitKidCateringApp.Models
 {
