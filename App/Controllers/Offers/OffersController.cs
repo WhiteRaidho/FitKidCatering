@@ -61,22 +61,6 @@ namespace FitKidCateringApp.Controllers.Offers
         }
         #endregion
 
-        #region GetCurrentOffers()
-        [AllowAnonymous]
-        [HttpGet("current")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesDefaultResponseType]
-        public async Task<ActionResult<List<OfferListItemModel>>> GetCurrentOffers()
-        {
-            var weekStart = DateTime.Now.StartOfWeek();
-            var weekEnd = DateTime.Now.EndOfWeek();
-
-            var offers = Offers.GetList(weekStart, weekEnd);
-            var result = Mapper.Map<IEnumerable<OfferListItemModel>>(offers);
-            return Ok(result);
-        }
-        #endregion
-
         #region Create()
         [RequireAll(StandardPermissions.CateringEmployee)]
         [HttpPost]
