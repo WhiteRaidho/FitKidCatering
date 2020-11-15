@@ -14,6 +14,8 @@
     <Compile Remove="Migrations\20201009231816_001_Users.cs" />
     <Compile Remove="Migrations\20201010003326_001_Users.cs" />
     <Compile Remove="Migrations\20201010003716_001_Identity.cs" />
+    <Compile Remove="Migrations\20201105133327_003_Institutions.cs" />
+    <Compile Remove="Migrations\20201105133327_003_Institutions.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,6 +2,7 @@
 ﻿using FitKidCateringApp.Models.Core;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using FitKidCateringApp.Models.Offers;
+using FitKidCateringApp.Models.Institutions;
 
 namespace FitKidCateringApp.Models
 {
@@ -26,5 +27,7 @@ namespace FitKidCateringApp.Models
         public DbSet<CorePermission> CorePermissions { get; set; }
 
         public DbSet<Offer> Offers { get; set; }
+
+        public DbSet<Institution> Institutions { get; set; }
     }
 }
