@@ -18,7 +18,7 @@ namespace FitKidCateringApp.Models.Offers
         [Required]
         public decimal Price { get; set; }
         public OfferType Type { get; set; }
-        public DateTime DateUtc { get; set; }
+        public short DayOfWeek { get; set; }
     }
 
     public enum OfferType

@@ -19,22 +19,9 @@ namespace FitKidCateringApp.Services.Offers
         #endregion
 
         #region GetList()
-        public List<Offer> GetList(DateTime? from = null, DateTime? to = null)
+        public List<Offer> GetList()
         {
-            var predicate = PredicateBuilder.New<Offer>(true);
-
-            if(from != null)
-            {
-                predicate.And(x => x.DateUtc.Date >= from);
-            }
-
-            if(to != null)
-            {
-                predicate.And(x => x.DateUtc.Date <= to);
-            }
-
             return Context.Offers
-                .Where(predicate)
                 .ToList();
         }
         #endregion

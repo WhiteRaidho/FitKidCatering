@@ -11,7 +11,6 @@ namespace FitKidCateringApp.ViewModels.Offers
         public string Name { get; set; }
         public decimal Price { get; set; }
         public int Type { get; set; }
-        public DateTime DateUtc { get; set; }
         public int DayOfWeek { get; set; }
     }
 }

@@ -20,8 +20,8 @@ namespace FitKidCateringApp.ViewModels.Offers
         [Required(ErrorMessage = "Typ posiłku jest wymagany")]
         public OfferType Type { get; set; }
 
-        [Required(ErrorMessage = "Data posiłku jest wymagana")]
-        [DateGreaterThanToday(ErrorMessage = "Data posiłku nie może być dzisiejsza lub wcześniejsza")]
-        public DateTime DateUtc { get; set; }
+        [Required(ErrorMessage = "Dzień posiłku jest wymagana")]
+        [Range(0, 6, ErrorMessage = "Dzień posiłku zawierać się w przedziale od poniedziałku do niedzieli")]
+        public short DayOfWeek { get; set; }
     }
 }

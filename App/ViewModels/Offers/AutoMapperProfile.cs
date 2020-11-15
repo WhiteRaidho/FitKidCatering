@@ -18,8 +18,7 @@ namespace FitKidCateringApp.ViewModels.Offers
         #region OffersProfile()
         protected void OffersProfile()
         {
-            CreateMap<Offer, OfferListItemModel>()
-                .ForMember(d => d.DayOfWeek, o => o.MapFrom(s => s.DateUtc.DayOfWeek));
+            CreateMap<Offer, OfferListItemModel>();
 
             CreateMap<OfferFormModel, Offer>()
                 .ForMember(d => d.Id, o => o.Ignore())
