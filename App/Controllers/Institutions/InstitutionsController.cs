@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using FitKidCateringApp.Attributes;
+using FitKidCateringApp.Helpers;
 using FitKidCateringApp.Models.Institutions;
 using FitKidCateringApp.Services.Institutions;
 using FitKidCateringApp.ViewModels.Institutions;
@@ -58,6 +60,7 @@ namespace FitKidCateringApp.Controllers.Institutions
 
         #region Create()
         [HttpPost]
+        [RequireAny(StandardPermissions.AdminAccess, StandardPermissions.CateringEmployee)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Create([FromBody]InstitutionFormModel model)
@@ -72,6 +75,7 @@ namespace FitKidCateringApp.Controllers.Institutions
 
         #region Edit()
         [HttpPut("{publicId}")]
+        [RequireAny(StandardPermissions.AdminAccess, StandardPermissions.CateringEmployee)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
@@ -90,6 +94,7 @@ namespace FitKidCateringApp.Controllers.Institutions
 
         #region Remove()
         [HttpDelete("{publicId}")]
+        [RequireAny(StandardPermissions.AdminAccess, StandardPermissions.CateringEmployee)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
