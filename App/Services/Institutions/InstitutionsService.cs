@@ -2,6 +2,7 @@
 using FitKidCateringApp.Models;
 using FitKidCateringApp.Models.Institutions;
 using LinqKit;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,14 +27,14 @@ namespace FitKidCateringApp.Services.Institutions
         #region GetById()
         public Institution GetById(Guid publicId)
         {
-            return Context.Institutions.FirstOrDefault(x => x.PublicId == publicId);
+            return Context.Institutions.Include(x => x.Owner).FirstOrDefault(x => x.PublicId == publicId);
         }
         #endregion
 
         #region GetList()
         public List<Institution> GetList()
         {
-            return Context.Institutions.ToList();
+            return Context.Institutions.Include(x => x.Owner).ToList();
         }
 
         #endregion

@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using FitKidCateringApp.Attributes;
-using FitKidCateringApp.Helpers;
 using FitKidCateringApp.Models.Institutions;
+using FitKidCateringApp.Services.Core;
 using FitKidCateringApp.Services.Institutions;
 using FitKidCateringApp.ViewModels.Institutions;
 using Microsoft.AspNetCore.Authorization;
@@ -23,10 +22,13 @@ namespace FitKidCateringApp.Controllers.Institutions
    
         protected InstitutionsService Institutions { get; }
 
-        public InstitutionsController(IMapper mapper,InstitutionsService institutions)
+        protected CoreUserService Users { get; }
+
+        public InstitutionsController(IMapper mapper,InstitutionsService institutions, CoreUserService users)
         {
             Mapper = mapper;
             Institutions = institutions;
+            Users = users;
         }
 
         #region GetById()
@@ -35,12 +37,12 @@ namespace FitKidCateringApp.Controllers.Institutions
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<InstitutionViewModel>> GetById(Guid publicId)
+        public async Task<ActionResult<InstitutionListItemModel>> GetById(Guid publicId)
         {
             var institution = Institutions.GetById(publicId);
             if (institution == null) return NotFound();
 
-            var result = Mapper.Map<InstitutionViewModel>(institution);
+            var result = Mapper.Map<InstitutionListItemModel>(institution);
             return Ok(result);
         }
         #endregion
@@ -60,30 +62,34 @@ namespace FitKidCateringApp.Controllers.Institutions
 
         #region Create()
         [HttpPost]
-        [RequireAny(StandardPermissions.AdminAccess, StandardPermissions.CateringEmployee)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Create([FromBody]InstitutionFormModel model)
         {
+            Guid formPublicId = model.OwnerPublicId;
             var entity = Mapper.Map<Institution>(model);
-           
+            var user = Users.GetCoreUser(formPublicId);
+            entity.OwnerId = user.Id;
+            entity.Owner = user;
             entity = Institutions.Create(entity);
-            return CreatedAtAction(nameof(GetById), new { publicId = entity.PublicId }, Mapper.Map<InstitutionViewModel>(entity));
-            
+            var newentity = Institutions.GetInstitution(entity.Id);
+            return CreatedAtAction(nameof(GetById), new { publicId = entity.PublicId }, Mapper.Map<InstitutionListItemModel>(entity));
         }
         #endregion
 
         #region Edit()
         [HttpPut("{publicId}")]
-        [RequireAny(StandardPermissions.AdminAccess, StandardPermissions.CateringEmployee)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Create(Guid publicId, [FromBody]InstitutionFormModel model)
         {
+            Guid formPublicId = model.OwnerPublicId;
             var entity = Institutions.GetById(publicId);
-
             if (entity == null) return NotFound();
+            var user = Users.GetCoreUser(formPublicId);
+            entity.OwnerId = user.Id;
+            entity.Owner = user;
 
             entity = Mapper.Map(model, entity);
             entity = Institutions.Update(entity);
@@ -94,7 +100,6 @@ namespace FitKidCateringApp.Controllers.Institutions
 
         #region Remove()
         [HttpDelete("{publicId}")]
-        [RequireAny(StandardPermissions.AdminAccess, StandardPermissions.CateringEmployee)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]

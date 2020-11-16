@@ -24,7 +24,8 @@ namespace FitKidCateringApp.ViewModels.Institutions
                 .ForMember(d => d.Id, o => o.Ignore())
                 .ForMember(d => d.PublicId, o => o.Ignore());
             CreateMap<Institution, InstitutionListItemModel>()
-                .ForMember(d => d.OwnerName, o => o.MapFrom(s => s.Owner.UserName));
+                .ForMember(d => d.OwnerPublicId, o => o.MapFrom(s => s.Owner.PublicId))
+                .ForMember(d => d.OwnerUsername, o => o.MapFrom(s => s.Owner.UserName));
         }
         #endregion
     }
