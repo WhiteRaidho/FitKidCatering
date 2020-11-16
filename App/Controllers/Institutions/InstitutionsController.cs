@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using FitKidCateringApp.Attributes;
+using FitKidCateringApp.Helpers;
 using FitKidCateringApp.Models.Institutions;
 using FitKidCateringApp.Services.Core;
 using FitKidCateringApp.Services.Institutions;
@@ -64,6 +66,7 @@ namespace FitKidCateringApp.Controllers.Institutions
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesDefaultResponseType]
+        [RequireAny(StandardPermissions.AdminAccess, StandardPermissions.CateringEmployee)]
         public async Task<ActionResult> Create([FromBody]InstitutionFormModel model)
         {
             Guid formPublicId = model.OwnerPublicId;
@@ -81,6 +84,7 @@ namespace FitKidCateringApp.Controllers.Institutions
         [HttpPut("{publicId}")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequireAny(StandardPermissions.AdminAccess, StandardPermissions.CateringEmployee)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Create(Guid publicId, [FromBody]InstitutionFormModel model)
         {
@@ -102,6 +106,7 @@ namespace FitKidCateringApp.Controllers.Institutions
         [HttpDelete("{publicId}")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [RequireAny(StandardPermissions.AdminAccess, StandardPermissions.CateringEmployee)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Remove(Guid publicId)
         {
