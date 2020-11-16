@@ -17,6 +17,6 @@ namespace FitKidCateringApp.ViewModels.Institutions
         [Required(ErrorMessage = "Nazwa miejscowości jest wymagana")]
         public string City { get; set; }
         [Required(ErrorMessage = "Id użytkownika jest wymagane")]
-        public string OwnerId { get; set; }
+        public Guid OwnerPublicId { get; set; }
     }
 }
