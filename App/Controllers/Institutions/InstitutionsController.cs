@@ -48,10 +48,10 @@ namespace FitKidCateringApp.Controllers.Institutions
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<List<InstitutionViewModel>>> GetInstitutions()
+        public async Task<ActionResult<List<InstitutionListItemModel>>> GetInstitutions()
         {
             var institutions = Institutions.GetList();
-            var result = Mapper.Map<IEnumerable<InstitutionViewModel>>(institutions);
+            var result = Mapper.Map<IEnumerable<InstitutionListItemModel>>(institutions);
             return Ok(result);
         }
         #endregion
