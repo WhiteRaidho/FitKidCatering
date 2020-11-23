@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 namespace FitKidCateringApp.Controllers.Core
 {
     [Authorize]
-    [RequireAny(StandardPermissions.AdminAccess)]
     [ApiController]
     [Area("Admin.Core")]
     [Route("api/admin/permissions")]
