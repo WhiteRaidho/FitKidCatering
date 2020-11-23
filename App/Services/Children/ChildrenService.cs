@@ -43,7 +43,7 @@ namespace FitKidCateringApp.Services.Children
         public List<Child> GetMyChild(long id)
         {
 
-            return Context.Children.Where(x => x.ParentId == id).Cast<Child>().ToList();
+            return Context.Children.Where(x => x.ParentId == id).Include(x => x.Institution).Cast<Child>().ToList();
             
         }
         #endregion
