@@ -28,14 +28,20 @@ namespace FitKidCateringApp.Services.Children
         #region GetById()
         public Child GetById(Guid publicId)
         {
-            return Context.Children.Include(x => x.Parent).Include(x => x.Institution).FirstOrDefault(x => x.PublicId == publicId);
+            return Context.Children
+                .Include(x => x.Institution)
+                .Include(x => x.Parent)
+                .FirstOrDefault(x => x.PublicId == publicId);
         }
         #endregion
 
         #region GetList()
         public List<Child> GetList()
         {
-            return Context.Children.Include(x => x.Parent).Include(x => x.Institution).ToList();
+            return Context.Children
+                .Include(x => x.Parent)
+                .Include(x => x.Institution)
+                .ToList();
         }
         #endregion
 
@@ -43,7 +49,11 @@ namespace FitKidCateringApp.Services.Children
         public List<Child> GetMyChild(long id)
         {
 
-            return Context.Children.Where(x => x.ParentId == id).Cast<Child>().ToList();
+            return Context.Children
+                .Include(x => x.Institution)
+                .Include(x => x.Parent)
+                .Where(x => x.ParentId == id)
+                .ToList();
             
         }
         #endregion
