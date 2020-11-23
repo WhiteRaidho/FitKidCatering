@@ -8,11 +8,11 @@ namespace FitKidCateringApp.ViewModels.Children
 {
     public class ChildListItemModel
     {
-        [Required]
         public string PublicId { get; set; }
         public string Name { get; set; }
         public string ParentPublicId { get; set; }
         public string ParentUsername { get; set; }
         public string InstitutionPublicId { get; set; }
+        public string InstitutionName { get; set; }
     }
 }

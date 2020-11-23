@@ -36,7 +36,6 @@ namespace FitKidCateringApp.Services.Institutions
         {
             return Context.Institutions.Include(x => x.Owner).ToList();
         }
-
         #endregion
     }
 }

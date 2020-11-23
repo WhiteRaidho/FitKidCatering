@@ -25,13 +25,9 @@ namespace FitKidCateringApp.Controllers.Core
     public class ChildrenController : ControllerBase
     {
         protected IMapper Mapper { get; }
-
         protected ChildrenService Children { get; }
-
         protected InstitutionsService Institutions { get; }
-
         protected CoreUserService Users { get; }
-
         protected ClaimsPrincipal User { get; }
 
         public ChildrenController(IMapper mapper, InstitutionsService institutions, CoreUserService users, ChildrenService children, IPrincipal user)
@@ -85,11 +81,9 @@ namespace FitKidCateringApp.Controllers.Core
 
             var parent = Users.GetCoreUser(formParentPublicId);
             entity.ParentId = parent.Id;
-            entity.Parent = parent;
 
             var institution = Institutions.GetById(formInstitutionPublicId);
             entity.InstitutionId = institution.Id;
-            entity.Institution = institution;
 
             entity = Children.Create(entity);
 
@@ -97,7 +91,7 @@ namespace FitKidCateringApp.Controllers.Core
         }
         #endregion
 
-        #region edit()
+        #region Edit()
         [HttpPut("{publicId}")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -108,16 +102,14 @@ namespace FitKidCateringApp.Controllers.Core
             Guid formInstitutionPublicId = model.InstitutionPublicId;
 
             var entity = Children.GetById(publicId);
+            entity = Mapper.Map(model, entity);
 
             var parent = Users.GetCoreUser(formParentPublicId);
             entity.ParentId = parent.Id;
-            entity.Parent = parent;
 
             var institution = Institutions.GetById(formInstitutionPublicId);
             entity.InstitutionId = institution.Id;
-            entity.Institution = institution;
-
-            entity = Mapper.Map(model, entity);
+            
             entity = Children.Update(entity);
 
             return Accepted();
@@ -150,14 +142,11 @@ namespace FitKidCateringApp.Controllers.Core
             var user = Users.GetCoreUser(User.Id());
             if (user == null) return NotFound();
 
-            var children = Children.GetMychild(user.Id);
+            var children = Children.GetMyChild(user.Id);
             var result = Mapper.Map<IEnumerable<ChildListItemModel>>(children);
 
             return Ok(result);
         }
         #endregion
-
-
-
     }
 }
