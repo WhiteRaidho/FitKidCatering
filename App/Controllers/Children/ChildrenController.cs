@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FitKidCateringApp.Extensions;
 using System.Security.Claims;
+using FitKidCateringApp.Extensions.Security;
+using FitKidCateringApp.Controllers.Children;
 
 namespace FitKidCateringApp.Controllers.Core
 {
@@ -29,10 +31,12 @@ namespace FitKidCateringApp.Controllers.Core
         protected InstitutionsService Institutions { get; }
         protected CoreUserService Users { get; }
         protected ClaimsPrincipal User { get; }
+        protected IAuthorizationService Authorization { get; }
 
-        public ChildrenController(IMapper mapper, InstitutionsService institutions, CoreUserService users, ChildrenService children, IPrincipal user)
+        public ChildrenController(IMapper mapper, InstitutionsService institutions, IAuthorizationService authorizationService, CoreUserService users, ChildrenService children, IPrincipal user)
         {
             Mapper = mapper;
+            Authorization = authorizationService;
             Institutions = institutions;
             Users = users;
             Children = children;
@@ -49,6 +53,8 @@ namespace FitKidCateringApp.Controllers.Core
         {
             var child = Children.GetById(publicId);
             if (child == null) return NotFound();
+
+            if (!Authorization.Can(User, ChildrenPermissions.View, child)) return Forbid();
 
             var result = Mapper.Map<ChildListItemModel>(child);
             return Ok(result);
@@ -85,6 +91,8 @@ namespace FitKidCateringApp.Controllers.Core
             var institution = Institutions.GetById(formInstitutionPublicId);
             entity.InstitutionId = institution.Id;
 
+            if (institution.OwnerId != User.Id()) return Forbid();
+
             entity = Children.Create(entity);
 
             return CreatedAtAction(nameof(GetById), new { publicId = entity.PublicId }, Mapper.Map<ChildListItemModel>(entity));
@@ -94,6 +102,7 @@ namespace FitKidCateringApp.Controllers.Core
         #region Edit()
         [HttpPut("{publicId}")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Edit(Guid publicId, [FromBody]ChildFormModel model)
@@ -102,6 +111,9 @@ namespace FitKidCateringApp.Controllers.Core
             Guid formInstitutionPublicId = model.InstitutionPublicId;
 
             var entity = Children.GetById(publicId);
+
+            if (!Authorization.Can(User, ChildrenPermissions.Manage, entity)) return Forbid();
+
             entity = Mapper.Map(model, entity);
 
             var parent = Users.GetCoreUser(formParentPublicId);
@@ -119,6 +131,7 @@ namespace FitKidCateringApp.Controllers.Core
         #region Remove()
         [HttpDelete("{publicId}")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult> Remove(Guid publicId)
@@ -126,6 +139,8 @@ namespace FitKidCateringApp.Controllers.Core
             var entity = Children.GetById(publicId);
 
             if (entity == null) return NotFound();
+
+            if (!Authorization.Can(User, ChildrenPermissions.Manage, entity)) return Forbid();
 
             Children.Remove(entity);
             return Accepted();
