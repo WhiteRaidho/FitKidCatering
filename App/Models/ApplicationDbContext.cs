@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using FitKidCateringApp.Models.Offers;
 using FitKidCateringApp.Models.Institutions;
 using FitKidCateringApp.Models.Children;
+using FitKidCateringApp.Models.Orders;
 
 namespace FitKidCateringApp.Models
 {
@@ -32,5 +33,7 @@ namespace FitKidCateringApp.Models
         public DbSet<Institution> Institutions { get; set; }
 
         public DbSet<Child> Children { get; set; }
+
+        public DbSet<Order> Orders { get; set; }
     }
 }

@@ -27,6 +27,11 @@ namespace FitKidCateringApp.Services.Offers
         #endregion
 
         #region GetById()
+        public Offer GetById(long id)
+        {
+            return Context.Offers.FirstOrDefault(x => x.Id == id);
+        }
+
         public Offer GetById(Guid publicId)
         {
             return Context.Offers.FirstOrDefault(x => x.PublicId == publicId);
