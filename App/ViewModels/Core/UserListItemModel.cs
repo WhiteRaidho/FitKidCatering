@@ -13,5 +13,12 @@ namespace FitKidCateringApp.ViewModels.Core
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public List<UserInstitutionListItem> Institutions { get; set; }
+    }
+
+    public class UserInstitutionListItem
+    {
+        public Guid PublicId { get; set; }
+        public string Name { get; set; }
     }
 }

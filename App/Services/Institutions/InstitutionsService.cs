@@ -37,5 +37,10 @@ namespace FitKidCateringApp.Services.Institutions
             return Context.Institutions.Include(x => x.Owner).ToList();
         }
         #endregion
+
+        public List<Institution> GetListForOwner(long ownerId)
+        {
+            return Context.Institutions.Include(x => x.Owner).Where(x => x.OwnerId == ownerId).ToList();
+        }
     }
 }

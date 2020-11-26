@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FitKidCateringApp.Models.Core;
+using FitKidCateringApp.ViewModels.Core;
 
 namespace FitKidCateringApp.ViewModels.Institutions
 {
@@ -26,6 +27,8 @@ namespace FitKidCateringApp.ViewModels.Institutions
             CreateMap<Institution, InstitutionListItemModel>()
                 .ForMember(d => d.OwnerPublicId, o => o.MapFrom(s => s.Owner.PublicId))
                 .ForMember(d => d.OwnerUsername, o => o.MapFrom(s => s.Owner.UserName));
+
+            CreateMap<Institution, UserInstitutionListItem>();
         }
         #endregion
     }

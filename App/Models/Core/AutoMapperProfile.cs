@@ -20,7 +20,8 @@ namespace FitKidCateringApp.Models.Core
             CreateMap<RegisterViewModel, CoreUser>()
                 .ForMember(d => d.PasswordHash, o => o.Ignore());
 
-            CreateMap<CoreUser, UserListItemModel>();
+            CreateMap<CoreUser, UserListItemModel>()
+                .ForMember(d => d.Institutions, o => o.Ignore());
         } 
         #endregion
     }

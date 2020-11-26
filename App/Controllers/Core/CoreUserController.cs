@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Principal;
 using FitKidCateringApp.Extensions;
+using FitKidCateringApp.Services.Institutions;
 
 namespace FitKidCateringApp.Controllers.Core
 {
@@ -29,14 +30,16 @@ namespace FitKidCateringApp.Controllers.Core
         protected IPasswordHasher<CoreUser> Hasher { get; }
         protected CoreUserService Users { get; }
         protected IConfiguration Configuration { get; }
+        protected InstitutionsService Institutions { get; }
         //protected ClaimsPrincipal User { get; }
 
-        public CoreUserController(IMapper mapper, IPasswordHasher<CoreUser> hasher, CoreUserService usersService, IConfiguration configuration, IPrincipal user )
+        public CoreUserController(IMapper mapper, IPasswordHasher<CoreUser> hasher, CoreUserService usersService, IConfiguration configuration, IPrincipal user, InstitutionsService institutions )
         {
             Mapper = mapper;
             Users = usersService;
             Configuration = configuration;
             Hasher = hasher;
+            Institutions = institutions;
             //User = (ClaimsPrincipal)user;
         }
 
@@ -161,6 +164,9 @@ namespace FitKidCateringApp.Controllers.Core
             if (user == null) return NotFound();
 
             var result = Mapper.Map<UserListItemModel>(user);
+
+            var institutions = Institutions.GetListForOwner(user.Id);
+            result.Institutions = Mapper.Map<List<UserInstitutionListItem>>(institutions);
             result.Id = 0;
             return Ok(result);
         }
