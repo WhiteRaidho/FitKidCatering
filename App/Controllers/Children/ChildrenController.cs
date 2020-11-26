@@ -171,12 +171,12 @@ namespace FitKidCateringApp.Controllers.Core
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
         [RequireAny(StandardPermissions.AdminAccess, StandardPermissions.CateringEmployee)]
-        public async Task<ActionResult<List<ChildListItemModel>>> GetInstitutionChildren(Guid InstutionPublicId)
+        public async Task<ActionResult<List<ChildListItemModel>>> GetInstitutionChildren(Guid InstitutionPublicId)
         {
-            var institution = Institutions.GetById(InstutionPublicId);
+            var institution = Institutions.GetById(InstitutionPublicId);
             if (institution == null) return NotFound();
 
-            var children = Children.GetInstitutionChildren(InstutionPublicId);
+            var children = Children.GetInstitutionChildren(InstitutionPublicId);
             var result = Mapper.Map<IEnumerable<ChildListItemModel>>(children);
 
             return Ok(result);
