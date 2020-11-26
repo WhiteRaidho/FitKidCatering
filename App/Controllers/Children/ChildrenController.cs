@@ -166,7 +166,7 @@ namespace FitKidCateringApp.Controllers.Core
 
 
         #region GetInstitutionChildren()
-        [HttpGet("institution/{InstutionPublicId}")]
+        [HttpGet("institution/{InstitutionPublicId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
