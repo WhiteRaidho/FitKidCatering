@@ -58,5 +58,18 @@ namespace FitKidCateringApp.Services.Children
         }
         #endregion
 
+        #region GetInstitutionChildren()
+        public List<Child> GetInstitutionChildren(Guid id)
+        {
+
+            return Context.Children
+                .Include(x => x.Institution)
+                .Include(x => x.Parent)
+                .Where(x => x.Institution.PublicId == id)
+                .ToList();
+
+        }
+        #endregion
+
     }
 }
