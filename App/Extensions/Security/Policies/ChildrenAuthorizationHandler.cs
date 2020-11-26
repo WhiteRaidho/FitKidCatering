@@ -12,7 +12,7 @@ namespace FitKidCateringApp.Extensions.Security
     {
         public static bool HandleChildrenAuthorizationPolicy(this IPermissionsPolicy policy, ClaimsPrincipal user, Type permissionType, string permissionName)
         {
-            switch(permissionName)
+            switch (permissionName)
             {
                 default:
                     return user.HasPermission(permissionType, permissionName);
@@ -21,7 +21,7 @@ namespace FitKidCateringApp.Extensions.Security
 
         public static bool HandleProjectsAuthorizationPolicy<TResource>(this IOperationsPolicy policy, ClaimsPrincipal user, Type permissionType, string permissionName, TResource resource) where TResource : Child
         {
-            switch(permissionName)
+            switch (permissionName)
             {
                 case "View":
                     return user.HasPermission(typeof(StandardPermissions), "CateringEmployee") || resource.ParentId == user.Id() || resource.Institution.OwnerId == user.Id();
@@ -33,4 +33,5 @@ namespace FitKidCateringApp.Extensions.Security
                     return false;
             }
         }
+    }
 }

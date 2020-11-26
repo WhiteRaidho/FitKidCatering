@@ -163,5 +163,24 @@ namespace FitKidCateringApp.Controllers.Core
             return Ok(result);
         }
         #endregion
+
+
+        #region GetInstitutionChildren()
+        [HttpGet("institution/{InstutionPublicId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        [RequireAny(StandardPermissions.AdminAccess, StandardPermissions.CateringEmployee)]
+        public async Task<ActionResult<List<ChildListItemModel>>> GetInstitutionChildren(Guid InstitutionPublicId)
+        {
+            var institution = Institutions.GetById(InstitutionPublicId);
+            if (institution == null) return NotFound();
+
+            var children = Children.GetInstitutionChildren(InstitutionPublicId);
+            var result = Mapper.Map<IEnumerable<ChildListItemModel>>(children);
+
+            return Ok(result);
+        }
+        #endregion
     }
 }
