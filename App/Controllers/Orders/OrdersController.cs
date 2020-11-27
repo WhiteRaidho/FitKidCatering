@@ -58,7 +58,7 @@ namespace FitKidCateringApp.Controllers.Orders
                 ChildPublicId = childPublicId,
                 Offers = new List<Guid>()
             };
-            if (order == null)
+            if (order != null)
                 result.Offers = order.Offers.Select(x => Offers.GetById(x).PublicId).ToList();
 
             return Ok(result);
