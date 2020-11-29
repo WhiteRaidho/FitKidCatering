@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using FitKidCateringApp.Attributes;
+using FitKidCateringApp.Helpers;
 using FitKidCateringApp.Models.Orders;
 using FitKidCateringApp.Services.Children;
 using FitKidCateringApp.Services.Offers;
@@ -56,10 +58,14 @@ namespace FitKidCateringApp.Controllers.Orders
             result = new OrderViewModel()
             {
                 ChildPublicId = childPublicId,
-                Offers = new List<Guid>()
+                Offers = new List<Guid>(),
+                Comment = ""
             };
             if (order != null)
+            {
                 result.Offers = order.Offers.Select(x => Offers.GetById(x).PublicId).ToList();
+                result.Comment = order.Comment;
+            }
 
             return Ok(result);
         }
@@ -70,17 +76,18 @@ namespace FitKidCateringApp.Controllers.Orders
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult> ChangeOrder(Guid childPublicId, [FromBody]List<Guid> offers)
+        public async Task<ActionResult> ChangeOrder(Guid childPublicId, [FromBody]OrderFormModel model)
         {
             var child = Children.GetById(childPublicId);
             if (child == null) return NotFound();
 
             var order = Orders.GetByChildId(child.Id);
-            var offerIds = offers.Select(x => Offers.GetById(x).Id).ToList();
+            var offerIds = model.Offers.Select(x => Offers.GetById(x).Id).ToList();
             if(order == null)
             {
                 order = new Order()
                 {
+                    Comment = model.Comment,
                     ChildId = child.Id,
                     Offers = offerIds
                 };
@@ -90,10 +97,33 @@ namespace FitKidCateringApp.Controllers.Orders
             else
             {
                 order.Offers = offerIds;
+                order.Comment = model.Comment;
                 Orders.Update(order);
             }
 
             return Accepted();
+        }
+        #endregion
+
+        #region GetOrderSummary()
+        [HttpGet("summary")]
+        [RequireAll(StandardPermissions.CateringEmployee)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<List<OrderSummaryViewModel>>> GetSummary()
+        {
+            var result = Orders.GetSummary();
+            return result;
+        }
+
+        [HttpGet("summary/{institutionPublicId}")]
+        [RequireAll(StandardPermissions.CateringEmployee)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<List<OrderSummaryViewModel>>> GetSummaryForInstitution(Guid institutionPublicId)
+        {
+            var result = Orders.GetSummaryForInstitution(institutionPublicId);
+            return result;
         }
         #endregion
     }
