@@ -14,6 +14,7 @@ namespace FitKidCateringApp.Models.Orders
     {
         [Required]
         public long ChildId { get; set; }
+        public string Comment { get; set; }
         public string OffersJson { get; set; }
 
 
