@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using FitKidCateringApp.Attributes;
+using FitKidCateringApp.Helpers;
 using FitKidCateringApp.Models.Orders;
 using FitKidCateringApp.Services.Children;
 using FitKidCateringApp.Services.Offers;
@@ -100,6 +102,28 @@ namespace FitKidCateringApp.Controllers.Orders
             }
 
             return Accepted();
+        }
+        #endregion
+
+        #region GetOrderSummary()
+        [HttpGet("summary")]
+        [RequireAll(StandardPermissions.CateringEmployee)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<List<OrderSummaryViewModel>>> GetSummary()
+        {
+            var result = Orders.GetSummary();
+            return result;
+        }
+
+        [HttpGet("summary/{institutionPublicId}")]
+        [RequireAll(StandardPermissions.CateringEmployee)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesDefaultResponseType]
+        public async Task<ActionResult<List<OrderSummaryViewModel>>> GetSummaryForInstitution(Guid institutionPublicId)
+        {
+            var result = Orders.GetSummaryForInstitution(institutionPublicId);
+            return result;
         }
         #endregion
     }
