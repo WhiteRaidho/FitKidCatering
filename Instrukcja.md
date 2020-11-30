@@ -53,11 +53,6 @@ Backend:
 	- Uzupełniamy ją danymi w następujący sposób:
 	```
 	"Database": {
-		"Server": "[serwer bazy danych]",
-		"Database": "[nazwa utworzonej bazy danych]",
-		"User": {
-			"Id": "[login utworzonego użytkownika]",
-			"Password": "[hasło utworzonego użytkownika]"
-		}
-	}
+    		"DefaultConnection": "Server=.\\SQLEXPRESS;Database=FitKidCatering;User Id=FitKid;Password=FitKid;MultipleActiveResultSets=true;"
+  	}
 	```
